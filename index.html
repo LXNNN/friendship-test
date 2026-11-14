@@ -1,0 +1,1368 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#120e0d">
+<title>我们会和好吗？</title>
+<style>
+  :root{
+    --ink:#f6efe6;
+    --muted:#c9b9a8;
+    --dim:rgba(246,239,230,.5);
+    --line:rgba(246,239,230,.14);
+    --lav:#8e7ab8;
+    --coral:#c96a55;
+    --gold:#b8892f;
+    --teal:#3f7f6b;
+    --blue:#5b86a8;
+    --rose:#b06a82;
+    --bg:#120e0d;
+    --serif:"Songti SC","Noto Serif SC","Source Han Serif SC","STSong",serif;
+    --sans:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",sans-serif;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;min-height:100%;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--sans);
+    font-size:16px;
+    line-height:1.75;
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+  }
+  button{font-family:inherit;}
+
+  /* ---------- 背景 ---------- */
+  .bg{
+    position:fixed;inset:0;z-index:-3;overflow:hidden;
+    background:
+      radial-gradient(700px 560px at 50% 26%, rgba(201,106,85,.15) 0%, transparent 70%),
+      radial-gradient(1100px 800px at 12% 8%, #2a1a16 0%, transparent 62%),
+      radial-gradient(900px 700px at 88% 18%, #1a2230 0%, transparent 60%),
+      radial-gradient(1000px 900px at 50% 105%, #2a2018 0%, transparent 65%),
+      #120e0d;
+  }
+  .bg .blob{
+    position:absolute;border-radius:50%;filter:blur(72px);opacity:.32;will-change:transform;
+  }
+  .b1{width:300px;height:300px;background:#c96a55;left:-90px;top:8%;opacity:.4;animation:drift 18s ease-in-out infinite;}
+  .b2{width:260px;height:260px;background:#8e7ab8;right:-80px;top:26%;animation:drift 22s ease-in-out infinite reverse;}
+  .b3{width:240px;height:240px;background:#3f7f6b;left:8%;bottom:6%;animation:drift 20s ease-in-out infinite;}
+  .b4{width:220px;height:220px;background:#b8892f;right:4%;bottom:18%;animation:drift 24s ease-in-out infinite reverse;}
+  .b5{width:180px;height:180px;background:#5b86a8;left:38%;top:44%;opacity:.2;animation:drift 26s ease-in-out infinite;}
+  .bg::before{
+    content:"";position:absolute;inset:0;
+    background:radial-gradient(circle at 50% 35%, transparent 0%, rgba(10,7,6,.5) 76%, rgba(10,7,6,.86) 100%);
+  }
+  .bg::after{
+    content:"";position:absolute;inset:0;opacity:.045;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.6'/%3E%3C/svg%3E");
+  }
+
+  /* ---------- 屏幕 ---------- */
+  .screen{
+    display:none;
+    width:100%;
+    min-height:100vh;
+    min-height:100dvh;
+    padding:calc(24px + env(safe-area-inset-top)) 22px calc(28px + env(safe-area-inset-bottom));
+  }
+  .screen.active{display:flex;flex-direction:column;}
+  #result.active{display:block;}
+
+  /* ---------- 封面 ---------- */
+  #cover{justify-content:space-between;text-align:center;}
+  .cover-inner{
+    flex:1;width:100%;max-width:540px;margin:0 auto;
+    display:flex;flex-direction:column;justify-content:center;align-items:center;
+    padding:20px 0 8px;
+  }
+  .eyebrow{
+    font-size:12px;letter-spacing:.3em;color:var(--dim);
+    margin:0 0 28px;padding-left:.3em;
+  }
+  .cover-title{
+    font-family:var(--serif);
+    font-size:clamp(52px,15vw,78px);
+    line-height:1.08;
+    font-weight:600;
+    letter-spacing:.02em;
+    margin:0;
+    color:var(--ink);
+    text-shadow:0 10px 40px rgba(0,0,0,.4);
+  }
+  .cover-title .accent{
+    display:block;
+    color:#dfa184;
+    background:linear-gradient(100deg,#e6b090,#c96a55 48%,#b06a82);
+    -webkit-background-clip:text;
+    background-clip:text;
+    -webkit-text-fill-color:transparent;
+  }
+  .cover-line{
+    width:46px;height:1px;margin:26px auto 0;
+    background:linear-gradient(90deg,transparent,var(--coral),transparent);
+  }
+  .cover-sub{
+    margin:16px 0 0;font-size:15px;letter-spacing:.2em;color:var(--muted);
+  }
+  .cover-desc{
+    margin:34px 0 34px;font-size:16px;line-height:1.95;color:var(--muted);
+  }
+  .cover-desc span{color:var(--ink);}
+  .primary-btn{
+    position:relative;isolation:isolate;
+    display:inline-flex;align-items:center;justify-content:center;
+    width:min(100%,340px);min-height:56px;padding:0 30px;
+    border:none;border-radius:999px;
+    background:linear-gradient(120deg,#c96a55,#b06a82 55%,#8e7ab8);
+    color:#fff;font:600 17px/1 var(--sans);letter-spacing:.14em;
+    box-shadow:0 12px 36px rgba(201,106,85,.32), inset 0 1px 0 rgba(255,255,255,.25);
+    cursor:pointer;
+    transition:transform .18s ease,box-shadow .18s ease,filter .18s ease;
+  }
+  .primary-btn::after{
+    content:"";position:absolute;inset:-2px;border-radius:999px;z-index:-1;
+    background:linear-gradient(120deg,#c96a55,#b06a82 55%,#8e7ab8);
+    filter:blur(18px);opacity:.35;animation:breathe 4s ease-in-out infinite;
+  }
+  .primary-btn:active{transform:scale(.98);filter:brightness(1.05);}
+  .cover-meta{
+    font-size:12px;color:rgba(246,239,230,.42);
+    margin:16px 0 0;letter-spacing:.06em;
+  }
+  .resume-btn{
+    margin-top:14px;border:none;background:none;color:var(--muted);
+    font-size:13px;letter-spacing:.08em;text-decoration:underline;
+    text-underline-offset:5px;cursor:pointer;padding:6px 10px;
+  }
+  .disclaimer{
+    font-size:11px;line-height:1.7;color:rgba(246,239,230,.32);
+    text-align:center;margin:18px auto 0;max-width:400px;
+  }
+
+  /* ---------- 答题 ---------- */
+  #quiz{justify-content:flex-start;}
+  .quiz-inner{
+    width:100%;max-width:520px;margin:0 auto;
+    display:flex;flex-direction:column;
+    min-height:calc(100dvh - 90px);
+  }
+  .quiz-top{
+    display:flex;align-items:center;gap:12px;
+    padding:2px 0 24px;
+    position:sticky;top:0;z-index:10;
+    background:linear-gradient(180deg, rgba(18,14,13,.92), rgba(18,14,13,0));
+  }
+  .icon-btn{
+    width:38px;height:38px;border-radius:50%;flex:0 0 auto;
+    border:1px solid var(--line);background:rgba(255,255,255,.05);
+    color:var(--ink);font-size:18px;line-height:1;
+    display:grid;place-items:center;cursor:pointer;
+    transition:background .2s ease;
+  }
+  .icon-btn:active{background:rgba(255,255,255,.1);}
+  .progress{display:flex;gap:4px;flex:1;align-items:center;}
+  .seg{
+    flex:1;height:3px;border-radius:2px;
+    background:rgba(255,255,255,.12);
+    transition:background .3s ease,box-shadow .3s ease;
+  }
+  .seg.on{background:var(--pc);box-shadow:0 0 10px var(--pc);}
+  .q-count{
+    font-size:11px;color:var(--dim);letter-spacing:.08em;
+    flex:0 0 auto;font-variant-numeric:tabular-nums;
+  }
+  .q-content{padding-top:6px;}
+  .q-content.anim{animation:fadeUp .42s cubic-bezier(.2,.7,.2,1) both;}
+  .q-tag{
+    display:flex;align-items:center;gap:8px;
+    font-size:12px;letter-spacing:.16em;color:var(--muted);
+    margin:0 0 14px;
+  }
+  .q-tag .dot{width:7px;height:7px;border-radius:50%;box-shadow:0 0 12px currentColor;flex:0 0 auto;}
+  .q-title{
+    font-family:var(--serif);
+    font-size:clamp(24px,6.4vw,30px);
+    line-height:1.5;font-weight:600;
+    margin:0 0 28px;color:var(--ink);letter-spacing:.01em;
+  }
+  .options{display:flex;flex-direction:column;gap:12px;}
+  .option{
+    display:flex;align-items:center;gap:12px;
+    width:100%;padding:16px 16px;margin:0;
+    border:1px solid rgba(255,255,255,.14);border-radius:16px;
+    background:var(--c);
+    color:#fff;font-size:16px;line-height:1.5;text-align:left;
+    box-shadow:0 8px 22px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.16);
+    cursor:pointer;
+    transition:transform .18s ease,filter .18s ease,box-shadow .18s ease;
+    animation:fadeUp .38s both;
+  }
+  .option:active{transform:scale(.985);filter:brightness(1.08);}
+  .option.selected{
+    outline:2px solid rgba(255,255,255,.85);
+    outline-offset:2px;
+    filter:brightness(1.06);
+  }
+  .opt-letter{
+    flex:0 0 30px;height:30px;border-radius:50%;
+    display:grid;place-items:center;
+    background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.22);
+    font-size:13px;font-weight:600;letter-spacing:.02em;
+  }
+  .opt-text{flex:1;}
+
+  /* ---------- 加载 ---------- */
+  #loading{align-items:center;justify-content:center;text-align:center;}
+  .loading-inner{width:100%;}
+  .orbit{width:120px;height:120px;position:relative;margin:0 auto 34px;}
+  .orbit::before{
+    content:"";position:absolute;inset:0;border-radius:50%;
+    border:1px solid rgba(255,255,255,.12);
+  }
+  .orbit::after{
+    content:"";position:absolute;inset:18px;border-radius:50%;
+    border:1px dashed rgba(255,255,255,.08);
+    animation:spin 12s linear infinite;
+  }
+  .orbit span{
+    position:absolute;top:50%;left:50%;
+    width:10px;height:10px;margin:-5px;border-radius:50%;
+    animation:orbit 2.8s linear infinite;
+  }
+  .orbit span:nth-child(1){background:var(--coral);box-shadow:0 0 18px var(--coral);animation-delay:0s;}
+  .orbit span:nth-child(2){background:var(--gold);box-shadow:0 0 18px var(--gold);animation-delay:-.93s;}
+  .orbit span:nth-child(3){background:var(--teal);box-shadow:0 0 18px var(--teal);animation-delay:-1.86s;}
+  .loading-text{
+    font-family:var(--serif);
+    font-size:18px;color:var(--muted);letter-spacing:.08em;
+    transition:opacity .2s ease;min-height:1.8em;margin:0;
+  }
+
+  /* ---------- 结果 ---------- */
+  #result{padding-top:calc(30px + env(safe-area-inset-top));}
+  .result-inner{max-width:520px;margin:0 auto;padding-bottom:40px;}
+  .result-head{text-align:center;padding:14px 0 4px;}
+  .score-label{
+    font-size:11px;letter-spacing:.3em;color:var(--dim);
+    margin:0 0 10px;padding-left:.3em;
+  }
+  .score{
+    font-family:var(--serif);
+    font-size:clamp(96px,30vw,150px);
+    line-height:1;font-weight:600;
+    letter-spacing:-.03em;
+    font-variant-numeric:tabular-nums;
+    margin:0;
+  }
+  .score .pct{font-size:.28em;letter-spacing:0;margin-left:4px;opacity:.8;}
+  .band-name{
+    font-family:var(--serif);
+    font-size:clamp(26px,7vw,34px);
+    font-weight:600;margin:16px 0 8px;letter-spacing:.04em;
+  }
+  .tagline{
+    font-size:15px;line-height:1.85;color:var(--muted);
+    margin:0 auto;max-width:350px;
+  }
+  .score-note{
+    font-size:12px;line-height:1.8;color:rgba(246,239,230,.45);
+    max-width:370px;margin:22px auto 0;padding:12px 0;
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  }
+  .section{margin:34px 0 0;}
+  .section-title{
+    display:flex;align-items:center;gap:10px;
+    font-size:16px;font-weight:600;letter-spacing:.04em;
+    margin:0 0 14px;color:var(--ink);
+  }
+  .section-title .bar{
+    width:4px;height:18px;border-radius:2px;flex:0 0 auto;
+    box-shadow:0 0 12px currentColor;
+  }
+  .section-body{color:#e7dcd1;font-size:15.5px;line-height:1.95;}
+  .section-body p{margin:0 0 14px;}
+  .section-body p:last-child{margin-bottom:0;}
+  .reason-list{display:grid;gap:10px;}
+  .reason{
+    background:rgba(255,255,255,.045);
+    border-left:3px solid;
+    border-radius:12px;
+    padding:13px 15px;
+    font-size:14.5px;line-height:1.8;color:#e7dcd1;
+  }
+  .closing{
+    font-family:var(--serif);
+    text-align:center;
+    font-size:clamp(19px,5vw,23px);
+    line-height:1.85;
+    color:var(--ink);
+    padding:40px 8px 30px;
+    letter-spacing:.02em;
+  }
+  .actions{display:grid;gap:12px;margin-top:8px;}
+  .actions .primary-btn{width:100%;max-width:none;}
+  .ghost-btn{
+    width:100%;min-height:52px;border-radius:999px;
+    border:1px solid var(--line);background:rgba(255,255,255,.04);
+    color:var(--muted);font-size:15px;letter-spacing:.1em;cursor:pointer;
+    transition:background .2s ease;
+  }
+  .ghost-btn:active{background:rgba(255,255,255,.08);}
+
+  /* ---------- 分享弹层 ---------- */
+  .modal{
+    position:fixed;inset:0;z-index:100;
+    display:flex;align-items:center;justify-content:center;
+    padding:24px;
+    background:rgba(8,6,6,.86);
+    -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+  }
+  .modal[hidden]{display:none;}
+  .modal-inner{width:100%;max-width:420px;position:relative;text-align:center;}
+  .modal-inner img{
+    display:block;width:100%;height:auto;border-radius:20px;
+    box-shadow:0 30px 80px rgba(0,0,0,.6);
+  }
+  .modal-hint{
+    font-size:13px;color:var(--muted);margin:0 0 14px;letter-spacing:.08em;
+  }
+  .modal-close{
+    position:absolute;top:-46px;right:0;
+    width:36px;height:36px;border-radius:50%;
+    border:1px solid var(--line);background:rgba(255,255,255,.08);
+    color:var(--ink);font-size:22px;line-height:1;cursor:pointer;
+  }
+  .download-link{
+    display:inline-block;margin-top:16px;
+    color:var(--muted);font-size:13px;
+    text-decoration:underline;text-underline-offset:4px;
+  }
+
+  /* ---------- 动效 ---------- */
+  @keyframes fadeUp{
+    from{opacity:0;transform:translateY(14px);}
+    to{opacity:1;transform:translateY(0);}
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+  @keyframes orbit{
+    from{transform:rotate(0deg) translateX(48px) rotate(0deg);}
+    to{transform:rotate(360deg) translateX(48px) rotate(-360deg);}
+  }
+  @keyframes drift{
+    0%,100%{transform:translate3d(0,0,0) scale(1);}
+    50%{transform:translate3d(22px,-26px,0) scale(1.08);}
+  }
+  @keyframes breathe{
+    0%,100%{opacity:.28;transform:scale(.98);}
+    50%{opacity:.5;transform:scale(1.03);}
+  }
+
+  @media (max-width:380px){
+    .screen{padding-left:18px;padding-right:18px;}
+    .option{padding:14px;font-size:15px;}
+    .cover-desc{font-size:15px;}
+    .q-title{font-size:23px;}
+  }
+  @media (min-width:700px){
+    .screen{padding-top:40px;padding-bottom:48px;}
+    .cover-inner{max-width:560px;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{
+      animation-duration:.001ms !important;
+      animation-iteration-count:1 !important;
+      transition-duration:.001ms !important;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="bg" aria-hidden="true">
+  <span class="blob b1"></span>
+  <span class="blob b2"></span>
+  <span class="blob b3"></span>
+  <span class="blob b4"></span>
+  <span class="blob b5"></span>
+</div>
+
+<main id="app">
+  <section id="cover" class="screen active">
+    <div class="cover-inner">
+      <p class="eyebrow">一场关于友情的测试</p>
+      <h1 class="cover-title">我们会<span class="accent">和好吗？</span></h1>
+      <div class="cover-line" aria-hidden="true"></div>
+      <p class="cover-sub">给那个走散的人</p>
+      <p class="cover-desc">有些友情不是断了，<br><span>是不知道怎么接上。</span></p>
+      <button id="startBtn" class="primary-btn">开始测试</button>
+      <p class="cover-meta">19 道题 · 约 2 分半 · 答案只存在你的手机里</p>
+      <button id="resumeBtn" class="resume-btn" hidden>继续上次</button>
+    </div>
+    <p class="disclaimer">这是一个基于关系心理学视角的娱乐测试，不构成任何建议或预测。</p>
+  </section>
+
+  <section id="quiz" class="screen">
+    <div class="quiz-inner">
+      <div class="quiz-top">
+        <button id="backBtn" class="icon-btn" aria-label="上一题">←</button>
+        <div id="progress" class="progress" aria-hidden="true"></div>
+        <span id="qCount" class="q-count"></span>
+      </div>
+      <div id="qContent" class="q-content"></div>
+    </div>
+  </section>
+
+  <section id="loading" class="screen">
+    <div class="loading-inner">
+      <div class="orbit" aria-hidden="true"><span></span><span></span><span></span></div>
+      <p id="loadingText" class="loading-text">正在翻你们的聊天记录…</p>
+    </div>
+  </section>
+
+  <section id="result" class="screen">
+    <div id="resultContent" class="result-inner"></div>
+  </section>
+</main>
+
+<div id="shareModal" class="modal" hidden>
+  <div class="modal-inner">
+    <button id="closeModal" class="modal-close" aria-label="关闭">×</button>
+    <p class="modal-hint">长按图片保存到相册</p>
+    <img id="shareImg" alt="我们会和好吗结果卡">
+    <a id="downloadLink" class="download-link" download="我们会和好吗-结果卡.png">下载图片</a>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   配色
+   ============================================================ */
+const PALETTE = [
+  { rgb:'142,122,184', hex:'#8e7ab8' }, // 薰衣草
+  { rgb:'201,106,85',  hex:'#c96a55' }, // 珊瑚
+  { rgb:'184,137,47',  hex:'#b8892f' }, // 芥末
+  { rgb:'63,127,107',  hex:'#3f7f6b' }, // 青绿
+  { rgb:'91,134,168',  hex:'#5b86a8' }, // 雾蓝
+  { rgb:'176,106,130', hex:'#b06a82' }  // 豆沙粉
+];
+
+/* ============================================================
+   题库
+   ============================================================ */
+const QUESTIONS = [
+  {
+    id:'lastTalk', tag:'开场', color:0,
+    title:'你们最后一次说话，是什么时候？',
+    options:[
+      { t:'昨天，或者今天', v:'today' },
+      { t:'上周', v:'week' },
+      { t:'上个月', v:'month' },
+      { t:'半年前', v:'halfyear' },
+      { t:'更久以前', v:'longer' },
+      { t:'我已经记不清了', v:'forgot' }
+    ]
+  },
+  {
+    id:'pairType', tag:'关于你们', color:1,
+    title:'你们是…',
+    options:[
+      { t:'两个女生', v:'ff' },
+      { t:'两个男生', v:'mm' },
+      { t:'一男一女', v:'fm' },
+      { t:'不想说', v:'secret' }
+    ]
+  },
+  {
+    id:'howMet', tag:'关于你们', color:2,
+    title:'你们是怎么认识的？',
+    options:[
+      { t:'从小一起长大', v:'childhood' },
+      { t:'同学', v:'classmate' },
+      { t:'同事', v:'colleague' },
+      { t:'网友', v:'online' },
+      { t:'朋友介绍，或者其他', v:'other' }
+    ]
+  },
+  {
+    id:'howLong', tag:'关于你们', color:3,
+    title:'你们认识了多久？',
+    options:[
+      { t:'不到一年', v:'under1' },
+      { t:'1-3 年', v:'1to3' },
+      { t:'3-7 年', v:'3to7' },
+      { t:'7 年以上', v:'7plus' }
+    ]
+  },
+  {
+    id:'howClose', tag:'关于你们', color:4,
+    title:'你们曾经有多好？',
+    options:[
+      { t:'普通朋友，偶尔联系', v:'casual', w:0, r:'你们曾经只是偶尔联系的朋友，这段关系的基础不算深。' },
+      { t:'很好的朋友，会分享日常', v:'good', w:2, r:'你们曾经是会分享日常的朋友，这份熟悉还在。' },
+      { t:'无话不说，彼此都知道对方的事', v:'everything', w:4, r:'你们曾经无话不说，这种连接不会因为一段时间不说话就消失。' },
+      { t:'像家人一样，见过彼此最狼狈的样子', v:'family', w:5, r:'你们曾经像家人一样，这段关系的根很深。' }
+    ]
+  },
+  {
+    id:'cause', tag:'那件事', color:5,
+    title:'你们是因为什么走散的？',
+    options:[
+      { t:'一次争吵，或者一句说重了的话', v:'quarrel', w:8, r:'你们的分开不是因为不在乎了，是因为一次没处理好的冲突。' },
+      { t:'一件让我失望的事，信任被打破了', v:'trust', w:-12, r:'那件事伤到了信任。信任一旦裂了，修复需要更长时间，也需要更小心。' },
+      { t:'因为第三个人，或者一场误会', v:'third', w:3, r:'你们之间隔着一个人，或者一句没被澄清的话。这层东西还没有被说开。' },
+      { t:'价值观、选择、人生方向不一样了', v:'values', w:-6, r:'你们不是谁变了，是长成了不一样的人。' },
+      { t:'距离、工作、生活阶段把我们分开了', v:'distance', w:-4, r:'你们输给的不是彼此，是距离和生活节奏。' },
+      { t:'没有具体的事，慢慢就不联系了', v:'drift', w:-3, r:'你们没有一个明确的终点，只是慢慢不联系了。' },
+      { t:'钱、利益，或者一次合作', v:'money', w:-10, r:'钱的事过去了，但心里的账还没有。' },
+      { t:'说不清，就是慢慢松了', v:'unclear', w:-2, r:'你说不清原因，说明这段关系里有很多没有被命名的部分。' }
+    ]
+  },
+  {
+    id:'repair', tag:'那件事之后', color:0,
+    title:'那件事之后，谁主动试过修复？',
+    options:[
+      { t:'我主动过', v:'me', w:5, r:'你主动过。你没有得到回应，但你至少没有留下“如果我当初……”的遗憾。' },
+      { t:'TA 主动过', v:'them', w:5, r:'TA 主动过。这说明 TA 曾经也在乎，只是你们没接上。' },
+      { t:'我们都试过', v:'both', w:8, r:'你们都伸过手，只是没在同一时间握住。' },
+      { t:'都没有', v:'neither', w:-5, r:'那件事之后，你们都没有回头。不是不在乎，是都在等对方先低头。' },
+      { t:'试过，但没成功', v:'tried', w:2, r:'你们试过修复，但那次没有成功。这不代表你们不适合，只代表时机不对。' }
+    ]
+  },
+  {
+    id:'fault', tag:'那件事之后', color:1,
+    title:'现在想起来，那件事更像谁的错？',
+    options:[
+      { t:'我的错', v:'me', w:2, r:'你把责任揽在了自己身上。会自责的人，通常是太在乎的人。' },
+      { t:'TA 的错', v:'them', w:-3, r:'你觉得错在 TA。你有权生气，但别让这件事变成你唯一记得的东西。' },
+      { t:'都有', v:'both', w:5, r:'你觉得你们都有错。这个答案说明你已经从“谁赢了”里走出来了。' },
+      { t:'谁都没错', v:'neither', w:3, r:'你觉得谁都没错。有些友情就是会走散，不需要有人做错什么。' },
+      { t:'说不清', v:'unclear', w:0, r:'你说不清是谁的错。有些事本来就没有一个干净的责任划分。' }
+    ]
+  },
+  {
+    id:'time', tag:'现在', color:2,
+    title:'你们分开多久了？',
+    options:[
+      { t:'3 个月以内', v:'recent', w:4, r:'你们分开还不到三个月，情绪还在，很多话也还在。' },
+      { t:'3-12 个月', v:'half', w:2, r:'你们分开了三个月到一年，最锋利的情绪过去了一点，但还没有完全放下。' },
+      { t:'1-3 年', v:'years', w:-2, r:'你们分开一到三年了，这个时间足够让很多事变淡，也足够看清这段友情的分量。' },
+      { t:'3 年以上', v:'long', w:-5, r:'你们分开三年以上了。你还是来做这个测试，说明这段友情在你心里一直没有真正结案。' }
+    ]
+  },
+  {
+    id:'contact', tag:'现在', color:3,
+    title:'现在还有联系吗？',
+    options:[
+      { t:'每天都会说话', v:'daily', w:9, r:'你们现在还每天说话，这扇门一直是开着的。' },
+      { t:'偶尔聊几句', v:'sometimes', w:7, r:'你们偶尔还会聊几句，这条线没有断。' },
+      { t:'只在群里，或者朋友圈点赞', v:'group', w:2, r:'你们只在群里或朋友圈有交集，这层连接很轻，但还在。' },
+      { t:'完全断联，但没有删', v:'nocontact', w:-6, r:'你们已经完全断联，但没有删。这扇门关着，但没有锁死。' },
+      { t:'已经互删了', v:'deleted', w:-10, r:'你们已经互删了，这是最彻底的一种断开。但删得掉联系方式，删不掉那段曾经。' }
+    ]
+  },
+  {
+    id:'mutual', tag:'现在', color:4,
+    title:'你们还有共同的朋友或群吗？',
+    options:[
+      { t:'有，而且大家还会提起彼此', v:'talk', w:5, r:'你们还有共同的朋友，而且大家还会提起彼此。这是一座还在的桥。' },
+      { t:'有，但大家都默契地不提', v:'avoid', w:3, r:'你们有共同的朋友，但大家都默契地不提。这说明那件事还没有过去。' },
+      { t:'有，但已经很少来往', v:'rare', w:1, r:'你们还有共同的朋友，但已经很少来往。连接在变细。' },
+      { t:'没有了', v:'none', w:-5, r:'你们没有共同的朋友或群了，少了一个自然的交集。但你们之间发生过的事，不会因为少了一个群就消失。' }
+    ]
+  },
+  {
+    id:'yourConflict', tag:'关于你', color:5,
+    title:'有矛盾的时候，你更像哪一种？',
+    options:[
+      { t:'当场说开，不想憋着', v:'direct', w:2 },
+      { t:'先冷静一下，再找机会说', v:'calm', w:2 },
+      { t:'憋着不说，等它自己过去', v:'hold', w:-2 },
+      { t:'会翻脸，说很重的话', v:'explode', w:-3 }
+    ]
+  },
+  {
+    id:'taConflict', tag:'关于 TA', color:0,
+    title:'TA 更像哪一种？',
+    options:[
+      { t:'当场说开', v:'direct', w:2 },
+      { t:'先冷静一下', v:'calm', w:2 },
+      { t:'憋着不说', v:'hold', w:-2 },
+      { t:'会翻脸，说很重的话', v:'explode', w:-3 },
+      { t:'我不太确定', v:'unsure', w:0 }
+    ]
+  },
+  {
+    id:'initiative', tag:'关于你们', color:1,
+    title:'你们之间，谁更常主动联系？',
+    options:[
+      { t:'总是我先找 TA', v:'me', w:1, r:'一直是你在主动。你在这段友情里投入得更多。' },
+      { t:'总是 TA 先找我', v:'them', w:1, r:'一直是 TA 在主动。你可能习惯了被找。' },
+      { t:'差不多，轮流', v:'balanced', w:4, r:'你们之间比较平衡，没有人一直在追着另一个人跑。' },
+      { t:'看情况，说不准', v:'unsure', w:0, r:'你们谁更主动，说不准。这段关系里没有固定的角色。' }
+    ]
+  },
+  {
+    id:'stalk', tag:'关于你', color:2,
+    title:'你有没有偷偷看过 TA 的动态？',
+    options:[
+      { t:'经常看', v:'often', w:3, r:'你经常偷偷看 TA 的动态。你还在关心，只是不想让 TA 知道。' },
+      { t:'偶尔会看', v:'sometimes', w:2, r:'你偶尔会看 TA 的动态。那份在意还在，只是没有以前那么频繁。' },
+      { t:'看过一两次', v:'once', w:0, r:'你看过一两次 TA 的动态。你没有完全放下，但也没有停在原地。' },
+      { t:'没有，也不敢', v:'never', w:-1, r:'你没有再去看 TA 的动态。你在试着把注意力收回来。' }
+    ]
+  },
+  {
+    id:'newFriends', tag:'关于你', color:3,
+    title:'分开之后，你身边有新的知心朋友吗？',
+    options:[
+      { t:'有，能说心里话', v:'close', w:2, r:'你身边有新的知心朋友。这不是背叛，这是你的生活还在往前走。' },
+      { t:'有朋友，但不一样', v:'different', w:1, r:'你有新的朋友，但有些位置换不了人。' },
+      { t:'没有', v:'none', w:0, r:'你身边还没有新的知心朋友。你可能会觉得空，但这不代表你再也遇不到。' },
+      { t:'我不太想交新的', v:'avoid', w:-2, r:'你不太想交新的朋友。你还在用自己的方式和过去待在一起。' }
+    ]
+  },
+  {
+    id:'motive', tag:'关于你', color:4,
+    title:'你想和好，更多是因为…',
+    options:[
+      { t:'我真的想念 TA', v:'miss', w:3, r:'你想和好，是因为你真的想念 TA。这个动机很干净。' },
+      { t:'我不甘心', v:'unwilling', w:-2, r:'你想和好，有一部分是因为不甘心。这不丢人，但要分清楚：你想要的是 TA，还是想要一个“我没有输”的答案。' },
+      { t:'我觉得遗憾', v:'regret', w:1, r:'你想和好，是因为遗憾。遗憾说明你在乎，但遗憾也可能让你美化过去。' },
+      { t:'我有点孤独', v:'lonely', w:0, r:'你想和好，有一部分是因为孤独。孤独的时候，人容易把“有人陪”和“对的人”混在一起。' },
+      { t:'我只是想知道 TA 过得好不好', v:'care', w:0, r:'你只是想知道 TA 过得好不好。这份关心很轻，也很真。' }
+    ]
+  },
+  {
+    id:'reaction', tag:'关于你', color:5,
+    title:'如果 TA 现在发来一句“最近好吗”，你会…',
+    options:[
+      { t:'马上回', v:'now', w:6, r:'如果 TA 发来消息，你会马上回。你心里其实一直在等这扇门被敲响。' },
+      { t:'想回，但会犹豫', v:'hesitate', w:2, r:'如果 TA 发来消息，你会犹豫。你想回，又怕自己显得太在意。' },
+      { t:'不知道说什么', v:'unsure', w:-2, r:'如果 TA 发来消息，你会不知道说什么。你们之间隔了太多没说的话。' },
+      { t:'不想回', v:'no', w:-8, r:'如果 TA 发来消息，你不想回。你还在生气，或者你已经不想再回去了。' }
+    ]
+  },
+  {
+    id:'lastWords', tag:'最后一句', color:0,
+    title:'如果还能对 TA 说一句话，你选哪句？',
+    options:[
+      { t:'我很想你', v:'miss' },
+      { t:'你最近好吗', v:'howareyou' },
+      { t:'谢谢你', v:'thanks' },
+      { t:'对不起', v:'sorry' },
+      { t:'我什么都不会说了', v:'nothing' }
+    ]
+  }
+];
+
+/* ============================================================
+   八个分数段
+   ============================================================ */
+const BANDS = [
+  {
+    min:1, max:12, name:'宇宙尘埃', color:'#8d9bb5',
+    tagline:'你们完成了此生最后一次交集。',
+    main:[
+      '在某一个普通的下午，你们完成了此生最后一次交集。没有争吵，没有告别，甚至没有一句像样的再见。但你们曾纠缠过的量子，会在宇宙中，永远不灭。',
+      '这不是一句安慰。你认真对待过的那段友情，已经长在你身上了：你看人的方式、你笑起来的某个瞬间、你遇到事时想起的那句话，都有它的影子。它没有消失，只是换了一种方式陪你。',
+      '所以，这个分数不是在说“你们没戏了”。它是在说：这段关系已经完成了它在那段时间里的任务。你们曾经彼此值得，这一点，不会因为后来不说话而作废。'
+    ],
+    next:'接下来的三个月，你可能还会在某个瞬间想起 TA。不用急着把这种感觉赶走，也不用急着联系。你可以只是承认：我想过你。然后继续过你的日子。真正的放下，不是再也不想起，是想起来的时候，心里不再打仗。'
+  },
+  {
+    min:13, max:25, name:'潮水退去', color:'#7f9ab0',
+    tagline:'不是谁的错，潮水本来就会退。',
+    main:[
+      '你们的分数很低，但不是零。这说明你们之间不是没有过真心，只是那份真心现在没有可以靠岸的地方。',
+      '有些友情不是被一件事毁掉的，是被很多件小事慢慢推远的：一次没回的消息，一次没被接住的情绪，一次“算了，不说了”。你们都没有恶意，只是都在用自己的方式省力。等回过神来，已经隔了很远。',
+      '这个分数不是在怪你。它只是在说：现在的你们，确实很难回到从前。承认这一点，不会让你显得薄情，反而会让你轻松一点。'
+    ],
+    next:'接下来的三个月，如果你们在某个场合遇见，点头、微笑、说一句“好久不见”，就已经很好了。不用逼自己热络，也不用刻意躲开。你们可以从“认识的人”重新开始，也可以就停在这里。两种都可以。'
+  },
+  {
+    min:26, max:38, name:'静音的房间', color:'#6f8f9a',
+    tagline:'声音调到了最小，但谁都没有关机。',
+    main:[
+      '你们之间还有一点微弱的连接：可能是通讯录里没删的名字，可能是共同群里偶尔跳出来的头像，可能是你路过一家店时突然想起 TA。',
+      '但这点连接，还不足以让任何一个人先开口。你们把声音调到了最小，谁都没有关机，也谁都没有说话。',
+      '这个分数不高，但它不是判决。它只是在提醒你：如果这段友情对你还有分量，那它现在需要的不是“等”，是一个很小的、具体的动作。不是长篇大论，不是翻旧账，只是一句“最近怎么样”。'
+    ],
+    next:'接下来的三个月，你可能会有一个瞬间特别想联系 TA，然后又把这个念头压下去。如果这个念头出现了三次以上，也许可以试着发一条很短的消息。不用期待立刻回到从前，先看看那扇门还开不开。'
+  },
+  {
+    min:39, max:50, name:'冬天的种子', color:'#7d8f78',
+    tagline:'需要时间，也需要条件。',
+    main:[
+      '你们卡在一个中间地带：不是完全没可能，但现在还不到时候。',
+      '可能你们都需要一点时间，把当时的情绪沉淀下去；也可能你们之间还缺一个自然的理由，让两个人重新说上话。友情和爱情不一样，它没有那么多“必须说清楚”的仪式，很多时候，它只需要一个共同的场景：一顿饭、一个群、一次顺路的见面。',
+      '这个分数在说：种子还在，但现在还是冬天。你可以等，也可以先做点别的。不用每天盯着它看。'
+    ],
+    next:'接下来的三个月，不用急着做决定。你可以先把注意力放回自己的生活里。如果你们之间真的有缘分，它会在一个你没想到的时刻，给你一个开口的理由。如果没有，你也没有损失什么。'
+  },
+  {
+    min:51, max:62, name:'岔路口的回声', color:'#b08a5a',
+    tagline:'缺的不是感情，是一个契机。',
+    main:[
+      '你们的分数落在中段偏上。这不是因为你们现在还多亲密，而是因为你们之间还有“没断干净”的东西：可能是一个共同的群，可能是偶尔的点赞，可能是共同的朋友还会提起彼此。',
+      '心理学里管这种状态叫“关系悬置”——不是结束，也不是继续，是两个人都在等一个不用自己先低头的机会。',
+      '你们缺的不是感情。你们曾经的感情是真的，不然你不会来做这个测试。你们缺的是一个契机，和一句“最近好吗”。但契机不会自己敲门。它通常以三种样子出现：一次偶遇、一个共同朋友的传话，或者你某天晚上突然发出去的一条消息。前两种靠运气，第三种靠你。'
+    ],
+    next:'接下来的三个月，你们大概率还会在某个共同群里看到对方的名字。如果 TA 先开口，你会松一口气；如果你先开口，也不用觉得丢脸。友情里先说话的人，不是输家，是更勇敢的那个。'
+  },
+  {
+    min:63, max:74, name:'没说完的话', color:'#c07a5f',
+    tagline:'你们之间还有一句没说完的话。',
+    main:[
+      '你们的分数偏高，说明这段友情在现实层面还有不少“可以重新接上”的条件：你们可能还有联系，还有共同的朋友，或者分开的时间还不算太久。',
+      '但分数没有更高，是因为你们之间还卡着一句没说完的话。那句话可能是“其实那天我很难过”，可能是“我不是不在乎你”，也可能是“我一直以为你会先找我”。',
+      '友情里最可惜的，不是吵架，是吵完之后两个人都以为对方懂了。你们都在心里把那段对话演了很多遍，但谁都没有真的说出口。'
+    ],
+    next:'接下来的三个月，你们之间大概率会有一个“差点说开”的时刻：可能是一次长聊，可能是一句玩笑，可能是一个共同朋友提起的旧事。如果那个时刻来了，别用“都过去了”把它挡回去。你可以说一句真话，哪怕只有一句。'
+  },
+  {
+    min:75, max:86, name:'同一片海', color:'#c08a6a',
+    tagline:'大概率会再见，但再见不等于回去。',
+    main:[
+      '你们的分数很高。这说明你们之间的连接还在：可能还有联系，还有共同的朋友，还有彼此都记得的很多事。从概率上说，你们大概率还会再见面、再说话，甚至会在某一天突然恢复到一种很自然的相处。',
+      '但我想提醒你：“会再见”和“会回去”是两件事。你们可以重新成为朋友，但不一定能回到当年那种毫无保留的状态。人会长大，友情也会换一种形状。这不是变淡，是变成熟。',
+      '所以，别把“和好”理解成“回到过去”。更好的版本是：你们都往前走了一点，然后在新的位置上，重新认识彼此。'
+    ],
+    next:'接下来的三个月，如果你想让这段友情往前走一步，可以试着创造一次“不尴尬的见面”：一顿饭、一场电影、一次顺路的咖啡。不用谈那件事，先让两个人重新习惯彼此的存在。'
+  },
+  {
+    min:87, max:99, name:'平行时空', color:'#d0a070',
+    tagline:'缘分还未结束，但和好已经不是唯一答案。',
+    main:[
+      '你们的分数很高，高到几乎可以确定：这段友情没有真正结束。你们之间还有很强的引力，可能是你们还在彼此的生活里，可能是你们都知道对方对自己有多重要。',
+      '但我想说的不是“快去找 TA”。我想说的是：缘分还未结束，但能不能和好，其实已经不那么重要了。因为在某一个平行时空里，你们依然如初——那个时空里的你们，没有说那句伤人的话，没有在那个下午转身。',
+      '而在这个时空里，你要做的，不是等一个完美的重逢，是把自己过好。你过得越好，你们重逢的时候，就越不像两个人在互相拯救，而像两个人都带着自己的光，重新走到一起。'
+    ],
+    next:'接下来的三个月，你可能会发现，你们之间的联系在慢慢变自然。不用急着定义“我们现在算什么”。有些友情不需要定义，它只需要两个人都还在。'
+  }
+];
+
+/* ============================================================
+   八种走散的原因
+   ============================================================ */
+const CAUSES = {
+  quarrel:{
+    title:'一次争吵',
+    core:[
+      '表面上是那句话。但那句话之所以伤人，是因为你们之前已经有很多次“算了”没有说。友情里最危险的，不是吵架，是吵架之前那些被咽下去的小事。你们不是被那一句话拆散的，是被之前所有没说出口的话，推到了那一刻。',
+      '所以，那件事本身可能没有你想的那么严重。真正让你们的友情停下来的，是吵完之后，两个人都不知道该怎么收场。'
+    ]
+  },
+  trust:{
+    title:'失望与信任',
+    core:[
+      '信任这东西很奇怪：建立的时候要很多年，碎的时候只要一瞬间。你可能到现在都记得那个细节——TA 说的那句话，或者 TA 没做的那件事。让你难受的不是事情本身，是那一刻你突然意识到：原来我在 TA 心里，没有我以为的那么重要。',
+      '但我也想替你说一句：你的失望是合理的。你不是小题大做，你只是把一段友情看得很重。看重的人，才会疼。'
+    ]
+  },
+  third:{
+    title:'第三个人或一场误会',
+    core:[
+      '你们之间可能隔了一个人，或者一句没被澄清的话。友情里的第三方，最伤人的地方不是“TA 跟别人更好了”，是“我变成了那个被留在原地的人”。',
+      '误会也是一样。你们可能都在等对方先解释，结果两个人都在心里把对方判了刑。到最后，真正让你们走散的，不是那件事，是“我以为你懂”和“我以为你不在乎”。'
+    ]
+  },
+  values:{
+    title:'价值观与选择',
+    core:[
+      '你们没有变坏，只是长成了不一样的人。以前你们可以聊一整晚，现在你们对很多事的看法都不一样了。这种走散最让人难过的地方在于：你找不到一个可以怪的人，因为你们都没有错，只是不再同路了。',
+      '但同路这件事，本来就不是永久的。有些人陪你走一段，是为了让你在那一段里不孤单。那段路走完了，不代表那段陪伴是假的。'
+    ]
+  },
+  distance:{
+    title:'距离与生活阶段',
+    core:[
+      '不是不想联系，是每次想联系都不知道从哪句开始。你们的生活节奏不一样了：一个在加班，一个在带娃；一个在另一个城市，一个还留在原地。你们的聊天记录停在某一句“改天约”，然后那个“改天”一直没有来。',
+      '这种走散最容易被误会成“不在乎”。其实不是。你们只是都被生活推着走，走着走着，就找不到一个自然的开口了。'
+    ]
+  },
+  drift:{
+    title:'慢慢淡了',
+    core:[
+      '没有哪一天是终点。只是从某一次“下次再约”开始，你们就再也没有下次了。这种走散最难受的地方在于，你找不到一个可以怪的人——没有背叛，没有争吵，只是生活在往前走的时候，把你们放在了不同的速度里。',
+      '但你也别把这种“淡”理解成“假”。很多友情就是这样：它没有死，只是睡着了。有的会醒，有的不会。你能做的，是承认它曾经很重要，然后继续往前走。'
+    ]
+  },
+  money:{
+    title:'钱与利益',
+    core:[
+      '钱是表面，底下是“你有没有把我当自己人”。真正让你难受的，可能不是那笔钱，是 TA 在处理这件事的时候，让你觉得自己被放在了“外人”的位置上。',
+      '友情里谈钱不丢人，丢人的是明明在意却装作不在意。你们可能都没有把那句话说出来，于是钱的事过去了，心里的账却没有过去。'
+    ]
+  },
+  unclear:{
+    title:'说不清',
+    core:[
+      '有些友情不是断的，是松的。你说不上来是哪一天、哪件事、哪句话，但你就是知道，你们回不去了。',
+      '这种“说不清”不是你的问题。人的关系本来就有很多无法命名的部分。你不需要为每一段走散找到一个原因，才能允许自己难过。'
+    ]
+  }
+};
+
+/* ============================================================
+   修复 / 归因 / 时间
+   ============================================================ */
+const REPAIR = {
+  me:'那件事之后，是你先伸的手。你可能发过消息、打过电话，或者只是试着像以前一样开个玩笑。你没有得到你想要的回应。我想说：你主动过，这件事本身就很珍贵。不是所有勇敢都有回音，但勇敢不会因为你没被接住就变得不值钱。',
+  them:'那件事之后，是 TA 先伸的手。你可能没有接住，或者当时还不知道该怎么接。现在想起来，你可能会有一点后悔。但你要知道：人在受伤的时候，第一反应是保护自己，这不是冷漠，是本能。',
+  both:'你们都伸过手，只是没在同一时间握住。一次没接住，第二次就不敢再伸了。你们不是不想和好，是都在等一个“这次一定能接住”的信号。',
+  neither:'那件事之后，你们都没有回头。不是谁赢了，是两个人都在等对方先低头。等到后来，低头这件事变得比那件事本身更难。你们不是不在乎，是都把“先开口”当成了“我输了”。',
+  tried:'你们试过，但没成功。可能是那次谈话没说透，可能是你们低估了那件事留下的东西。试过没成功，不代表你们不适合做朋友，只代表那次修复的时机和方法不对。'
+};
+
+const FAULT = {
+  me:'你现在觉得，那件事更多是你的错。你可能一直在心里责怪自己。但我想说：会自责的人，通常不是坏的人，是太在乎的人。你可以承认自己当时做得不够好，但不用把整段友情都判给自己。',
+  them:'你现在觉得，那件事更多是 TA 的错。你有权利生气，也有权利不原谅。但别让“是 TA 的错”变成你唯一记得的事。你可以记得 TA 错在哪，也可以记得 TA 曾经对你好过。这两件事可以同时成立。',
+  both:'你觉得你们都有错。这个答案很珍贵，因为它说明你已经从“谁赢了”里走出来了。友情里很少有一个人的错。更多时候，是两个人都在用自己的方式保护自己，然后不小心把对方推远了。',
+  neither:'你觉得谁都没错。这可能是最接近真相的答案。有些友情就是会走散，不是因为谁做错了什么，只是因为时间、距离、或者生活本身。承认这一点，你可能会轻松一点。',
+  unclear:'你说不清是谁的错。那就先别急着分。有些事情，本来就没有一个干净的责任划分。你可以允许自己记得那些好的部分，也允许自己记得那些疼的部分。'
+};
+
+const TIME = {
+  recent:'你们分开还不到三个月。这个阶段，情绪还在，很多话也还在。它是最容易冲动联系的阶段，也是最容易说错话的阶段。如果你要开口，先想清楚：你是想解决问题，还是只想证明自己还在 TA 心里。',
+  half:'你们分开了三个月到一年。这个阶段，最锋利的情绪已经过去了一点，但很多事情还没有完全放下。它其实是一个不错的窗口：你们都比当时冷静，也还没有完全习惯没有彼此的生活。',
+  years:'你们分开一到三年了。这个时间足够让很多事情变淡，也足够让你看清：这段友情在你心里到底还有多重。如果它还在，那你现在想起 TA，已经不是“当时好生气”，而是“不知道 TA 现在怎么样”。',
+  long:'你们分开三年以上了。这个时间，很多人会把这段友情放进回忆里。但你还是来做这个测试，说明这段友情在你心里一直没有真正结案。没关系的。有些人和事，就是会留很久。'
+};
+
+/* ============================================================
+   性格错位 / 友情底色 / 最后一句
+   ============================================================ */
+function personalityText(your, ta){
+  const y = your || 'hold';
+  const t = ta || 'hold';
+  const label = { direct:'直说', calm:'先冷静', hold:'憋着', explode:'翻脸', unsure:'说不清' };
+  const map = {
+    'hold|hold':'你们都很会忍。忍到最后，连“我其实很在意”都说不出口。你们都在等对方先开口，最后等到的是沉默。你们不是不在乎，是都把“不说”当成了体谅。',
+    'direct|hold':'你是直说的那一个，TA 是憋着的那一个。你以为说清楚就没事了，TA 却觉得你在逼 TA。你们不是不在乎对方，是处理情绪的速度不一样。',
+    'hold|direct':'你是憋着的那一个，TA 是直说的那一个。你以为不说是在体谅，TA 以为不说是不在乎。你们都在用自己的方式保护这段关系，只是保护的方式刚好相反。',
+    'direct|direct':'你们都习惯把话说开。你们其实有能力修复，那次没修复，可能只是因为你们都太累了，或者都以为对方会先来找自己。',
+    'explode|hold':'你会在当下把情绪砸出去，TA 会把自己关起来。你说完就过去了，TA 却把每一句都记在了心里。你们不是不合适，是你们的“过去”速度不一样。',
+    'hold|explode':'你习惯把话咽回去，TA 会在当下把情绪砸出来。TA 说完就过去了，你却被那几句话留在了原地。你们不是不合适，是你们的“过去”速度不一样。',
+    'calm|calm':'你们都习惯先冷静。冷静本身没有错，但两个人都太冷静的时候，很多话就会冷掉。你们不是不想说，是都在等一个“合适的时机”，而那个时机一直没有来。',
+    'direct|calm':'你会把话直接说出来，TA 需要一点时间消化。你觉得 TA 在逃避，TA 觉得你在逼 TA。你们差的不是感情，是一个缓冲带。',
+    'calm|direct':'你会先冷静再说，TA 习惯当场说开。你觉得 TA 太急，TA 觉得你太冷。你们差的不是感情，是一个缓冲带。',
+    'explode|calm':'你容易在当下说重话，TA 会先退一步。你事后可能后悔，TA 可能已经把门关上了。你们都疼，只是疼的时间不一样。',
+    'calm|explode':'你会先退一步，TA 容易在当下说重话。你可能觉得 TA 伤人，TA 可能觉得你不在乎。你们都疼，只是疼的时间不一样。',
+    'explode|explode':'你们都会在当下说重话。吵的时候很凶，和好的时候也很快。你们不是不在乎对方，是都把情绪当成了表达在乎的方式。',
+    'hold|calm':'你把话憋在心里，TA 以为你需要时间。你们都在等一个合适的时机，结果那个时机一直没有来。',
+    'calm|hold':'你以为给 TA 时间就好，TA 其实在等你先问。你们都以为自己在体谅对方，结果两个人都没有被接住。',
+    'direct|explode':'你想把话说清楚，TA 却先炸了。你可能觉得 TA 不讲道理，TA 可能觉得你不够在乎。你们都想要一个答案，只是方式撞在了一起。',
+    'explode|direct':'你容易先炸，TA 想把话说清楚。你可能觉得 TA 在逼你，TA 可能觉得你在逃避。你们都想要一个答案，只是方式撞在了一起。'
+  };
+  return map[`${y}|${t}`] || `你是${label[y] || '说不清'}的人，TA 是${label[t] || '说不清'}的人。你们处理情绪的方式不一样，这不是谁对谁错，只是你们需要学会翻译彼此的语言。`;
+}
+
+function pairText(pair){
+  const map = {
+    ff:'两个女生的友情，常常比恋爱还细。你们记得彼此的每一个小情绪，也更容易被一句无心的话伤到。',
+    mm:'两个男生的友情，很多话都藏在玩笑里。你们可以很久不联系，但一见面还是能接上。',
+    fm:'一男一女的友情，常常要面对别人的误解。你们可能都懒得解释，但有些距离，是被外面的声音推出来的。',
+    secret:'你们的关系不需要被归类。友情本来就有很多种样子。'
+  };
+  return map[pair] || '';
+}
+
+function backgroundText(met, long, close){
+  const metText = {
+    childhood:'你们从小一起长大，共享过彼此最不设防的年纪。',
+    classmate:'你们的友情长在教室、食堂和晚自习里，离开那个场景之后，联系就少了一半。',
+    colleague:'你们的友情长在工位和加班里，离开那家公司之后，少了一个每天见面的理由。',
+    online:'你们先认识的是彼此的灵魂，后来才认识彼此的生活。',
+    other:'你们的认识有一点偶然，可能是一次旅行、一个活动，或者一个共同的朋友。'
+  };
+  const longText = {
+    under1:'你们认识的时间不算长，但有些友情不是按年算的。',
+    '1to3':'你们认识了几年，足够一起经历一些事，也足够看清彼此的一点脾气。',
+    '3to7':'你们认识了很多年，见过彼此换工作、换城市、换样子。',
+    '7plus':'你们认识了七年以上，这个长度本身就已经是一种答案。'
+  };
+  const closeText = {
+    casual:'你们不是那种会天天聊天的朋友，但你们在彼此的名单里。',
+    good:'你们是那种会分享日常的朋友，看到好笑的、好吃的，会顺手发给对方。',
+    everything:'你们是那种“不用经常联系，但一开口就能接上”的朋友。这种友情不靠频率，靠“我知道你在”。',
+    family:'你们见过彼此最狼狈的样子，也见过彼此最不设防的样子。你们的关系早就超过了“朋友”两个字。'
+  };
+  return [metText[met], longText[long], closeText[close]].filter(Boolean).join('');
+}
+
+const CLOSING = {
+  miss:{ label:'我很想你', text:'你选的是“我很想你”。那就说吧。不用解释，不用铺垫，不用先翻旧账。真正在乎过的人，听得懂这四个字后面的所有话。' },
+  howareyou:{ label:'你最近好吗', text:'你选的是“你最近好吗”。这是最安全、也最温柔的一句。它不逼对方回答过去，只问现在。如果你们之间还有一扇门，这句话就是敲门声。' },
+  thanks:{ label:'谢谢你', text:'你选的是“谢谢你”。有些友情不需要和好，也需要一句谢谢。谢谢 TA 陪你走过那一段。这句话说出口，不是为了 TA，是为了你自己。' },
+  sorry:{ label:'对不起', text:'你选的是“对不起”。如果你真的觉得欠 TA 一句道歉，那就说。但你要知道：道歉不是为了换一个“没关系”，是为了让你自己不再背着那句话往前走。' },
+  nothing:{ label:'我什么都不会说了', text:'你选的是“我什么都不会说了”。这也是一种答案。不是所有的故事都需要一个结尾，不是所有的友情都需要一个和好。你可以选择把话留在心里，然后好好过自己的日子。' }
+};
+
+/* ============================================================
+   应用逻辑
+   ============================================================ */
+const $ = (sel) => document.querySelector(sel);
+const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+const STORAGE_KEY = 'we-will-be-ok-v1';
+const state = { index:0, answers:{}, result:null, saved:null, locked:false };
+
+function colorAt(i){ return PALETTE[i % PALETTE.length]; }
+
+function loadSaved(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return null;
+    const data = JSON.parse(raw);
+    if(!data || !data.answers) return null;
+    return data;
+  }catch(e){ return null; }
+}
+
+function persist(){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      answers: state.answers,
+      index: state.index,
+      result: state.result
+    }));
+  }catch(e){}
+}
+
+function showScreen(id){
+  $$('.screen').forEach(s => s.classList.toggle('active', s.id === id));
+  window.scrollTo({ top:0, behavior:'auto' });
+}
+
+function startQuiz(fresh){
+  if(fresh){
+    state.answers = {};
+    state.index = 0;
+    state.result = null;
+    state.locked = false;
+    try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
+  }
+  renderQuestion();
+  showScreen('quiz');
+}
+
+function renderQuestion(){
+  const q = QUESTIONS[state.index];
+  const color = colorAt(state.index);
+  $('#progress').innerHTML = QUESTIONS.map((_, i) => {
+    const c = colorAt(i);
+    return `<span class="seg ${i <= state.index ? 'on' : ''}" style="--pc:${c.hex}"></span>`;
+  }).join('');
+  $('#qCount').textContent = `${state.index + 1} / ${QUESTIONS.length}`;
+  $('#backBtn').style.visibility = state.index === 0 ? 'hidden' : 'visible';
+
+  const selected = state.answers[q.id];
+  $('#qContent').innerHTML = `
+    <p class="q-tag"><span class="dot" style="background:${color.hex};color:${color.hex}"></span>${q.tag}</p>
+    <h2 class="q-title">${q.title}</h2>
+    <div class="options">
+      ${q.options.map((o, i) => {
+        const c = colorAt(state.index + i);
+        return `<button type="button" class="option ${selected === i ? 'selected' : ''}" data-i="${i}" style="--c:rgba(${c.rgb},.88);animation-delay:${i * 45}ms">
+          <span class="opt-letter">${String.fromCharCode(65 + i)}</span>
+          <span class="opt-text">${o.t}</span>
+        </button>`;
+      }).join('')}
+    </div>`;
+
+  const content = $('#qContent');
+  content.classList.remove('anim');
+  void content.offsetWidth;
+  content.classList.add('anim');
+  content.querySelectorAll('.option').forEach(btn => {
+    btn.addEventListener('click', () => choose(q, Number(btn.dataset.i)));
+  });
+}
+
+function choose(q, i){
+  if(state.locked) return;
+  state.locked = true;
+  state.answers[q.id] = i;
+  state.result = null;
+  persist();
+  const opts = $$('#qContent .option');
+  opts.forEach((b, j) => b.classList.toggle('selected', j === i));
+  setTimeout(() => {
+    if(state.index < QUESTIONS.length - 1){
+      state.index += 1;
+      persist();
+      renderQuestion();
+    }else{
+      finishQuiz();
+    }
+    state.locked = false;
+  }, 270);
+}
+
+function finishQuiz(){
+  showScreen('loading');
+  const texts = ['正在翻你们的聊天记录…','正在找那句没说出口的话…','正在问平行时空的你们…'];
+  const el = $('#loadingText');
+  let i = 0;
+  el.style.opacity = 1;
+  el.textContent = texts[0];
+  const timer = setInterval(() => {
+    i += 1;
+    if(i < texts.length){
+      el.style.opacity = 0;
+      setTimeout(() => {
+        el.textContent = texts[i];
+        el.style.opacity = 1;
+      }, 200);
+    }
+  }, 820);
+  setTimeout(() => {
+    clearInterval(timer);
+    state.result = computeResult(state.answers);
+    persist();
+    renderResult();
+    showScreen('result');
+  }, 2600);
+}
+
+function computeResult(answers){
+  const chosen = [];
+  let sum = 0;
+  let posMax = 0;
+  let negMax = 0;
+
+  QUESTIONS.forEach(q => {
+    const weights = q.options.map(o => typeof o.w === 'number' ? o.w : 0);
+    posMax += Math.max(0, ...weights);
+    negMax += Math.abs(Math.min(0, ...weights));
+    const opt = q.options[answers[q.id]];
+    if(opt && typeof opt.w === 'number'){
+      sum += opt.w;
+      if(opt.r) chosen.push({ q, opt });
+    }
+  });
+
+  let score = sum >= 0
+    ? 50 + (sum / Math.max(posMax, 1)) * 49
+    : 50 + (sum / Math.max(negMax, 1)) * 49;
+  score = 50 + (score - 50) * 1.08;
+
+  const val = (id) => {
+    const q = QUESTIONS.find(x => x.id === id);
+    const opt = q && q.options[answers[id]];
+    return opt ? opt.v : '';
+  };
+
+  const causeKey = val('cause');
+  const contactKey = val('contact');
+  const mutualKey = val('mutual');
+  const timeKey = val('time');
+  const repairKey = val('repair');
+
+  if((causeKey === 'trust' || causeKey === 'money') && contactKey === 'deleted') score = Math.min(score, 12);
+  if(contactKey === 'deleted' && mutualKey === 'none' && timeKey === 'long') score = Math.min(score, 15);
+  if(contactKey === 'nocontact' && mutualKey === 'none' && (timeKey === 'years' || timeKey === 'long')) score = Math.min(score, 22);
+  if(causeKey === 'quarrel' && (contactKey === 'daily' || contactKey === 'sometimes') && (timeKey === 'recent' || timeKey === 'half') && ['me','them','both'].includes(repairKey)) score = Math.max(score, 68);
+  if(['everything','family'].includes(val('howClose')) && contactKey === 'daily' && ['talk','avoid'].includes(mutualKey) && ['direct','calm'].includes(val('yourConflict')) && ['direct','calm'].includes(val('taConflict'))) score = Math.max(score, 78);
+
+  score = Math.round(Math.max(1, Math.min(99, score)));
+  const band = BANDS.find(b => score >= b.min && score <= b.max) || BANDS[BANDS.length - 1];
+
+  const sorted = [...chosen].sort((a, b) => Math.abs(b.opt.w) - Math.abs(a.opt.w));
+  let reasons = sorted.slice(0, 3).map(x => x.opt.r);
+  const positives = chosen.filter(x => x.opt.w > 0).sort((a, b) => b.opt.w - a.opt.w);
+  const negatives = chosen.filter(x => x.opt.w < 0).sort((a, b) => a.opt.w - b.opt.w);
+
+  if(score >= 60 && sorted.slice(0, 3).every(x => x.opt.w < 0)){
+    const p = positives.find(x => !reasons.includes(x.opt.r));
+    if(p) reasons[2] = p.opt.r;
+  }
+  if(score < 45 && sorted.slice(0, 3).every(x => x.opt.w > 0)){
+    const n = negatives.find(x => !reasons.includes(x.opt.r));
+    if(n) reasons[2] = n.opt.r;
+  }
+  if(reasons.length < 3){
+    const extra = chosen.map(x => x.opt.r).filter(r => r && !reasons.includes(r));
+    while(reasons.length < 3 && extra.length) reasons.push(extra.shift());
+  }
+
+  const cause = CAUSES[causeKey] || CAUSES.unclear;
+  const repair = REPAIR[repairKey] || '';
+  const fault = FAULT[val('fault')] || '';
+  const time = TIME[timeKey] || '';
+  const personality = personalityText(val('yourConflict'), val('taConflict'));
+  const background = pairText(val('pairType')) + backgroundText(val('howMet'), val('howLong'), val('howClose'));
+  const closing = CLOSING[val('lastWords')] || CLOSING.nothing;
+
+  return { score, band, reasons, background, cause, repair, fault, time, personality, closing, answers };
+}
+
+function renderResult(){
+  const r = state.result;
+  if(!r) return;
+  const c = r.band.color;
+  $('#resultContent').innerHTML = `
+    <div class="result-head">
+      <p class="score-label">你们的和好概率</p>
+      <div class="score" id="scoreNum" style="color:${c};text-shadow:0 0 50px ${hexToRgba(c, .3)}">0<span class="pct">%</span></div>
+      <h2 class="band-name">「${r.band.name}」</h2>
+      <p class="tagline">${r.band.tagline}</p>
+      <p class="score-note">这个分数不是 TA 心里的答案，是你们之间还剩下多少可以重新靠近的条件。</p>
+    </div>
+
+    <section class="section">
+      <h3 class="section-title"><span class="bar" style="background:${PALETTE[0].hex}"></span>为什么是这个分数</h3>
+      <div class="section-body">
+        ${r.band.main.map(p => `<p>${p}</p>`).join('')}
+      </div>
+      <div class="reason-list" style="margin-top:16px">
+        ${r.reasons.map((x, i) => `<div class="reason" style="border-color:${PALETTE[i % PALETTE.length].hex}">${x}</div>`).join('')}
+      </div>
+    </section>
+
+    <section class="section">
+      <h3 class="section-title"><span class="bar" style="background:${PALETTE[1].hex}"></span>你们曾经是什么样的朋友</h3>
+      <div class="section-body"><p>${r.background}</p></div>
+    </section>
+
+    <section class="section">
+      <h3 class="section-title"><span class="bar" style="background:${PALETTE[2].hex}"></span>那件事，到底发生了什么</h3>
+      <div class="section-body">
+        ${r.cause.core.map(p => `<p>${p}</p>`).join('')}
+        <p>${r.repair}</p>
+        <p>${r.fault}</p>
+        <p>${r.time}</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <h3 class="section-title"><span class="bar" style="background:${PALETTE[3].hex}"></span>你们的性格，是怎么把彼此推远的</h3>
+      <div class="section-body"><p>${r.personality}</p></div>
+    </section>
+
+    <section class="section">
+      <h3 class="section-title"><span class="bar" style="background:${PALETTE[4].hex}"></span>接下来的三个月</h3>
+      <div class="section-body"><p>${r.band.next}</p></div>
+    </section>
+
+    <section class="section">
+      <h3 class="section-title"><span class="bar" style="background:${PALETTE[5].hex}"></span>如果还能说一句话</h3>
+      <div class="section-body"><p>${r.closing.text}</p></div>
+    </section>
+
+    <div class="closing">我们曾经彼此值得。<br>以后不管是重新并肩，还是各自祝福、各自安好，<br>都不辜负那段真心。</div>
+
+    <div class="actions">
+      <button type="button" class="primary-btn" id="shareBtn">保存结果卡</button>
+      <button type="button" class="ghost-btn" id="restartBtn">重新测一次</button>
+    </div>
+    <p class="disclaimer">这是一个基于关系心理学视角的娱乐测试，不构成任何建议或预测。答案只保存在你的手机里。</p>
+  `;
+  animateScore(r.score);
+  $('#shareBtn').addEventListener('click', openShare);
+  $('#restartBtn').addEventListener('click', () => {
+    if(confirm('重新开始？这次的答案会被清空。')) startQuiz(true);
+  });
+}
+
+function hexToRgba(hex, alpha){
+  const h = hex.replace('#', '');
+  const full = h.length === 3 ? h.split('').map(ch => ch + ch).join('') : h;
+  const n = parseInt(full, 16);
+  const r = (n >> 16) & 255;
+  const g = (n >> 8) & 255;
+  const b = n & 255;
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+function animateScore(target){
+  const el = $('#scoreNum');
+  if(!el) return;
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    el.innerHTML = `${target}<span class="pct">%</span>`;
+    return;
+  }
+  const duration = 900;
+  const start = performance.now();
+  function tick(now){
+    const p = Math.min(1, (now - start) / duration);
+    const eased = 1 - Math.pow(1 - p, 3);
+    const value = Math.round(target * eased);
+    el.innerHTML = `${value}<span class="pct">%</span>`;
+    if(p < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
+function openShare(){
+  if(!state.result) return;
+  try{
+    const dataUrl = drawCard(state.result);
+    $('#shareImg').src = dataUrl;
+    $('#downloadLink').href = dataUrl;
+    $('#shareModal').hidden = false;
+    document.body.style.overflow = 'hidden';
+  }catch(e){
+    alert('结果卡生成失败了，可以直接截图这一页。');
+  }
+}
+
+function closeShare(){
+  $('#shareModal').hidden = true;
+  document.body.style.overflow = '';
+}
+
+function wrapText(ctx, text, x, y, maxWidth, lineHeight){
+  let line = '';
+  let yy = y;
+  for(const ch of text){
+    const test = line + ch;
+    if(ctx.measureText(test).width > maxWidth && line){
+      ctx.fillText(line, x, yy);
+      line = ch;
+      yy += lineHeight;
+    }else{
+      line = test;
+    }
+  }
+  if(line) ctx.fillText(line, x, yy);
+}
+
+function drawCard(r){
+  const W = 1080;
+  const H = 1440;
+  const canvas = document.createElement('canvas');
+  canvas.width = W;
+  canvas.height = H;
+  const ctx = canvas.getContext('2d');
+
+  const bg = ctx.createLinearGradient(0, 0, W, H);
+  bg.addColorStop(0, '#1b1311');
+  bg.addColorStop(.5, '#241a16');
+  bg.addColorStop(1, '#151517');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, W, H);
+
+  const blobs = [
+    { x:160, y:220, r:360, c:'rgba(201,106,85,.32)' },
+    { x:900, y:300, r:320, c:'rgba(142,122,184,.28)' },
+    { x:180, y:1150, r:380, c:'rgba(63,127,107,.24)' },
+    { x:920, y:1120, r:300, c:'rgba(184,137,47,.22)' },
+    { x:540, y:720, r:420, c:'rgba(176,106,130,.14)' }
+  ];
+  blobs.forEach(b => {
+    const g = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, b.r);
+    g.addColorStop(0, b.c);
+    g.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, W, H);
+  });
+
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  ctx.fillStyle = 'rgba(246,239,230,.55)';
+  ctx.font = '32px "PingFang SC","Microsoft YaHei",sans-serif';
+  ctx.fillText('我们会和好吗？', W / 2, 120);
+
+  ctx.fillStyle = 'rgba(246,239,230,.32)';
+  ctx.font = '24px "PingFang SC","Microsoft YaHei",sans-serif';
+  ctx.fillText('一场关于友情的测试', W / 2, 166);
+
+  ctx.fillStyle = r.band.color;
+  ctx.font = 'bold 220px "Songti SC","Noto Serif SC",serif';
+  ctx.fillText(`${r.score}%`, W / 2, 500);
+
+  ctx.fillStyle = '#f6efe6';
+  ctx.font = '56px "Songti SC","Noto Serif SC",serif';
+  ctx.fillText(`「${r.band.name}」`, W / 2, 650);
+
+  ctx.fillStyle = 'rgba(246,239,230,.75)';
+  ctx.font = '34px "PingFang SC","Microsoft YaHei",sans-serif';
+  wrapText(ctx, r.band.tagline, W / 2, 730, 760, 52);
+
+  ctx.strokeStyle = 'rgba(246,239,230,.16)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(150, 860);
+  ctx.lineTo(930, 860);
+  ctx.stroke();
+
+  ctx.fillStyle = 'rgba(246,239,230,.45)';
+  ctx.font = '26px "PingFang SC","Microsoft YaHei",sans-serif';
+  ctx.fillText('如果还能说一句话', W / 2, 940);
+
+  ctx.fillStyle = '#f6efe6';
+  ctx.font = '42px "Songti SC","Noto Serif SC",serif';
+  ctx.fillText(`“${r.closing.label}”`, W / 2, 1005);
+
+  ctx.fillStyle = '#f6efe6';
+  ctx.font = '40px "Songti SC","Noto Serif SC",serif';
+  ctx.fillText('我们曾经彼此值得。', W / 2, 1195);
+
+  ctx.fillStyle = 'rgba(246,239,230,.72)';
+  ctx.font = '36px "Songti SC","Noto Serif SC",serif';
+  ctx.fillText('以后各自祝福、各自安好。', W / 2, 1255);
+
+  ctx.fillStyle = 'rgba(246,239,230,.42)';
+  ctx.font = '26px "PingFang SC","Microsoft YaHei",sans-serif';
+  ctx.fillText('@姜将碎碎念', W / 2, 1325);
+
+  const dots = ['#c96a55','#b8892f','#3f7f6b','#8e7ab8','#5b86a8','#b06a82'];
+  dots.forEach((color, i) => {
+    ctx.beginPath();
+    ctx.arc(W / 2 - 75 + i * 30, 1372, 5, 0, Math.PI * 2);
+    ctx.fillStyle = color;
+    ctx.fill();
+  });
+
+  return canvas.toDataURL('image/png');
+}
+
+function init(){
+  const saved = loadSaved();
+  if(saved && saved.answers && Object.keys(saved.answers).length){
+    state.saved = saved;
+    const btn = $('#resumeBtn');
+    btn.hidden = false;
+    btn.textContent = saved.result ? '查看上次结果' : '继续上次的测试';
+    btn.addEventListener('click', () => {
+      state.answers = saved.answers || {};
+      state.index = Math.min(saved.index || 0, QUESTIONS.length - 1);
+      state.result = saved.result || null;
+      if(state.result){
+        renderResult();
+        showScreen('result');
+      }else{
+        renderQuestion();
+        showScreen('quiz');
+      }
+    });
+  }
+
+  $('#startBtn').addEventListener('click', () => startQuiz(true));
+  $('#backBtn').addEventListener('click', () => {
+    if(state.locked) return;
+    if(state.index > 0){
+      state.index -= 1;
+      persist();
+      renderQuestion();
+    }
+  });
+  $('#closeModal').addEventListener('click', closeShare);
+  $('#shareModal').addEventListener('click', (e) => {
+    if(e.target === $('#shareModal')) closeShare();
+  });
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape') closeShare();
+  });
+}
+
+init();
+/* __APP__ */
+</script>
+</body>
+</html>
